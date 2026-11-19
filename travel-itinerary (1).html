@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>旅遊行程</title>
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFCF6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFCF6; --ink:#3E3A39;
+  --coral:#F2A497; --yellow:#F6D27A; --sky:#A8D3E6; --green:#B9DAA5;
+  --bd:3px solid #3E3A39;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding-top:64px;background:var(--paper);color:var(--ink);
+  font-family:'Huninn','Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  font-size:16px;line-height:1.7;
+}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit}
+
+/* ---------- colors ---------- */
+.bg-coral{background:var(--coral)} .bg-yellow{background:var(--yellow)}
+.bg-sky{background:var(--sky)} .bg-green{background:var(--green)} .bg-paper{background:var(--paper)}
+
+/* ---------- nav ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;height:60px;
+  display:flex;align-items:center;gap:8px;padding:0 10px;
+  background:var(--paper);border-bottom:var(--bd);
+}
+.nav-logo{flex:none;width:38px;height:38px;display:block}
+.chips{flex:1;position:relative;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;border:var(--bd);border-radius:999px;background:var(--paper);
+  padding:1px 12px;font-size:14px;line-height:1.6;text-decoration:none;
+}
+.chip.on{background:var(--yellow)}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:var(--bd);border-radius:999px;background:var(--yellow);padding:5px 16px;
+  cursor:pointer;box-shadow:0 3px 0 var(--ink);line-height:1.5;
+}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.btn:focus-visible,.tab:focus-visible,.chip:focus-visible,.x:focus-visible{outline:3px dashed var(--ink);outline-offset:3px}
+.btn-sm{padding:1px 12px;font-size:14px}
+.btn-coral{background:var(--coral)} .btn-sky{background:var(--sky)}
+.btn-green{background:var(--green)} .btn-paper{background:var(--paper)}
+.btn-edit{flex:none}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+
+/* ---------- layout ---------- */
+.sec{max-width:720px;margin:0 auto;padding:30px 16px 4px;scroll-margin-top:56px}
+.hero-sec{padding-top:16px}
+.card{background:var(--paper);border:var(--bd);border-radius:28px;padding:16px}
+.stack{display:grid;gap:16px}
+.sec-title{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:22px;font-weight:normal}
+.ico svg{width:34px;height:34px;display:block}
+.sticker{border:var(--bd);border-radius:999px;padding:1px 18px}
+.empty{padding:8px 4px;opacity:.7;list-style:none}
+.note{font-size:14px;opacity:.85}
+
+/* ---------- hero ---------- */
+.hero{padding:14px}
+.scene{border:var(--bd);border-radius:22px;overflow:hidden;background:var(--sky);line-height:0}
+.scene svg{width:100%;height:auto;display:block}
+.hero-text{text-align:center;margin-top:12px}
+.hero-text h1{font-size:clamp(26px,7.4vw,36px);font-weight:normal;line-height:1.3}
+.hero-text .sub{font-size:15px;margin-top:2px}
+.cd{margin-top:14px}
+.cd-label{text-align:center;font-size:15px;margin-bottom:8px}
+.cd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cd-box{border:var(--bd);border-radius:20px;padding:6px 2px 4px;text-align:center;line-height:1.2}
+.cd-box b{display:block;font-size:28px;font-weight:normal}
+.cd-box span{font-size:12px}
+.cd-msg{border:var(--bd);border-radius:20px;background:var(--yellow);padding:10px 14px;text-align:center}
+
+/* ---------- forms ---------- */
+.in{
+  width:100%;min-width:0;font:inherit;font-size:16px;color:var(--ink);
+  border:var(--bd);border-radius:14px;background:var(--paper);padding:5px 10px;
+}
+textarea.in{resize:vertical;min-height:64px;line-height:1.5}
+.in:focus{outline:3px dashed var(--ink);outline-offset:2px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fgrid.one{grid-template-columns:1fr}
+.fl{display:block;font-size:13px}
+.fl span{display:block;margin:0 0 1px 4px}
+.fl.wide{grid-column:1/-1}
+.addrow{display:flex;gap:8px;margin-top:12px}
+.addrow .in{flex:1}
+
+/* ---------- checkbox ---------- */
+.ckb{
+  -webkit-appearance:none;appearance:none;flex:none;width:28px;height:28px;margin:0;
+  border:var(--bd);border-radius:10px;background:var(--paper);position:relative;cursor:pointer;
+}
+.ckb:checked{background:var(--green)}
+.ckb:checked::after{
+  content:'';position:absolute;left:7px;top:2px;width:7px;height:13px;
+  border:solid var(--ink);border-width:0 3px 3px 0;transform:rotate(45deg);
+}
+.ckb:focus-visible{outline:3px dashed var(--ink);outline-offset:3px}
+.ckb.pulse{animation:boing .4s cubic-bezier(.34,1.56,.64,1)}
+.ckb:checked + .ck-t{text-decoration:line-through;opacity:.55}
+.cklist{list-style:none;margin:0;padding:0}
+.ck{display:flex;align-items:center;gap:8px;min-height:44px}
+.ck label{flex:1;display:flex;align-items:center;gap:12px;cursor:pointer;padding:4px 0}
+.ck.edit{gap:8px;padding:3px 0}
+.x{
+  flex:none;width:34px;height:34px;border:var(--bd);border-radius:50%;
+  background:var(--coral);cursor:pointer;line-height:1;font-size:18px;padding:0;
+}
+.chkline{display:flex;align-items:center;gap:10px;margin-top:8px;cursor:pointer}
+.cnt-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.bar{height:16px;border:var(--bd);border-radius:999px;overflow:hidden;margin-bottom:10px;background:var(--paper)}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-right:3px solid var(--ink);transition:width .4s cubic-bezier(.34,1.56,.64,1)}
+.bar i[style*="width: 0%"]{border-right:0}
+
+/* ---------- flights ---------- */
+.f-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.tag{display:inline-block;border:var(--bd);border-radius:999px;padding:0 10px;font-size:13px;line-height:1.5}
+.f-no{font-size:15px}
+.route{display:grid;grid-template-columns:1fr 1.1fr 1fr;align-items:center;gap:4px}
+.airport b{display:block;font-size:34px;font-weight:normal;line-height:1.2}
+.airport small{font-size:13px}
+.airport.r{text-align:right}
+.route-mid svg{width:100%;height:28px;display:block}
+.f-meta{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px;border-top:3px dashed var(--ink);margin-top:10px;padding-top:10px;font-size:15px}
+.f-meta small{display:block;font-size:12px;opacity:.7;line-height:1.3}
+.flight .note{margin-top:8px}
+
+/* ---------- day tabs & timeline ---------- */
+.tabs{position:relative;display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:none;min-width:64px;border:var(--bd);border-radius:20px;background:var(--paper);
+  padding:3px 12px;text-align:center;cursor:pointer;line-height:1.3;font-size:15px;
+}
+.tab small{display:block;font-size:11px}
+.tab.on{background:var(--coral)}
+.tab.add{min-width:52px;background:var(--sky);font-size:22px;line-height:1.6}
+.day-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 14px}
+.day-title{font-size:19px;font-weight:normal}
+.day-title small{font-size:14px;opacity:.75}
+.tl{list-style:none;margin:0;padding:0}
+.ti{display:grid;grid-template-columns:52px 22px 1fr;gap:0 8px}
+.tl.animate .ti{animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i) * 70ms)}
+.ti-time{text-align:right;font-size:15px;padding-top:8px}
+.ti-rail{position:relative}
+.ti-rail::before{content:'';position:absolute;left:50%;top:0;bottom:-14px;width:3px;margin-left:-1.5px;background:var(--ink)}
+.ti:first-child .ti-rail::before{top:20px}
+.ti:last-child .ti-rail::before{bottom:auto;height:20px}
+.ti:first-child:last-child .ti-rail::before{display:none}
+.dot{position:absolute;left:50%;top:12px;width:20px;height:20px;margin-left:-10px;border:var(--bd);border-radius:50%;z-index:1}
+.ti-card{border:var(--bd);border-radius:22px;padding:10px 14px 12px;margin-bottom:14px;background:var(--paper);min-width:0}
+.ti-card.is-must{background:#FFF4F0}
+.ti-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:2px}
+.ti-card h4{font-size:17px;font-weight:normal;line-height:1.45}
+.place{display:inline-flex;align-items:center;gap:4px;font-size:14px;margin-top:2px;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;word-break:break-all}
+.place svg{width:14px;height:14px;flex:none}
+.ti-card .note{margin-top:4px}
+.must{
+  display:inline-flex;align-items:center;gap:4px;background:var(--coral);border:var(--bd);
+  border-radius:999px;padding:0 10px 0 6px;font-size:13px;line-height:1.5;
+  animation:wiggle 2.6s ease-in-out infinite;
+}
+.must svg{width:14px;height:14px}
+.ctrl{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ti-card.edit .fgrid{margin-bottom:8px}
+.ti-card.edit .fl{margin-bottom:8px}
+.ti-card.edit .fgrid .fl{margin-bottom:0}
+
+/* ---------- stays / packing ---------- */
+.stay h3{font-size:19px;font-weight:normal}
+.stay-dates{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0}
+.stay p{margin-top:4px;font-size:15px}
+.pack-card{padding-top:0;overflow:hidden}
+.pk-head{
+  margin:0 -16px 8px;padding:8px 16px;border-bottom:var(--bd);
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.pk-head h3{font-size:18px;font-weight:normal}
+.pk-head .in{background:var(--paper)}
+
+/* ---------- misc ---------- */
+.foot{max-width:720px;margin:0 auto;padding:28px 16px 48px;text-align:center;font-size:14px;opacity:.7}
+.sync{text-align:center;font-size:13px;margin-top:10px;opacity:.8}
+body.ro .ckb{pointer-events:none;opacity:.6}
+body.ro .addrow,body.ro .btn-edit{display:none}
+body.ro [data-act="sample"],body.ro [data-act="blank"],body.ro [data-act="import"]{display:none}
+#toast{
+  position:fixed;left:50%;bottom:22px;z-index:60;transform:translate(-50%,24px);opacity:0;pointer-events:none;
+  background:var(--yellow);border:var(--bd);border-radius:999px;padding:3px 18px;font-size:14px;
+  transition:opacity .25s,transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+body.editing .btn-edit{background:var(--green)}
+
+/* ---------- animation ---------- */
+@keyframes drift{from{transform:translateX(-12px)}to{transform:translateX(14px)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes ride{from{transform:translateX(-150px)}to{transform:translateX(430px)}}
+@keyframes fall{
+  0%{transform:translate(0,-24px) rotate(0);opacity:0}
+  8%{opacity:1}
+  100%{transform:translate(-34px,260px) rotate(260deg);opacity:1}
+}
+@keyframes pop{
+  from{transform:scale(.82) translateY(18px);opacity:0}
+  to{transform:none;opacity:1}
+}
+@keyframes boing{from{transform:scale(.7)}to{transform:none}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}40%{transform:rotate(-4deg)}60%{transform:rotate(4deg)}}
+@keyframes mini{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+
+.cloud{animation:drift 7s ease-in-out infinite alternate}
+.cloud.b{animation-duration:9s;animation-delay:-3s}
+.cloud.c{animation-duration:11s;animation-delay:-6s}
+.plane{animation:bob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.rays{animation:spin 26s linear infinite;transform-box:fill-box;transform-origin:center}
+.sun{animation:pulse 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.train{animation:ride 16s linear infinite}
+.petal{animation:fall 9s linear infinite;transform-box:fill-box;transform-origin:center}
+.mini-plane{animation:mini 2.4s ease-in-out infinite}
+.bounce{animation:pop .55s cubic-bezier(.34,1.56,.64,1)}
+
+@media (min-width:720px){
+  body{font-size:17px}
+  .fgrid{grid-template-columns:repeat(4,1fr)}
+  .fgrid.one{grid-template-columns:1fr 1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none !important;transition:none !important;scroll-behavior:auto !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="主選單">
+  <svg class="nav-logo" viewBox="0 0 40 40" aria-hidden="true">
+    <circle cx="20" cy="20" r="17" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/>
+    <path d="M8 29 L17 14 Q20 11 23 14 L32 29 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round"/>
+  </svg>
+  <div class="chips" id="chips">
+    <a class="chip on" href="#top">首頁</a>
+    <a class="chip" href="#flights">航班</a>
+    <a class="chip" href="#plan">行程</a>
+    <a class="chip" href="#todo">待辦</a>
+    <a class="chip" href="#stay">住宿</a>
+    <a class="chip" href="#pre">出發前</a>
+    <a class="chip" href="#pack">行李</a>
+    <a class="chip" href="#data">備份</a>
+  </div>
+  <button class="btn btn-sm btn-edit" id="editBtn" data-act="edit" type="button">編輯</button>
+</nav>
+
+<main>
+  <!-- ===== Home ===== -->
+  <section id="top" class="sec hero-sec">
+    <div class="card hero">
+      <div class="scene">
+        <svg viewBox="0 0 360 230" role="img" aria-label="繪本風插圖：櫻花、富士山、鳥居、新幹線與飛機">
+          <defs>
+            <path id="cl" d="M12 26 a10 10 0 0 1 2-19 a14 14 0 0 1 26-2 a11 11 0 0 1 8 21 z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+          </defs>
+          <rect width="360" height="230" fill="#A8D3E6"/>
+
+          <!-- sun -->
+          <g transform="translate(290,58)">
+            <g class="rays" stroke="#3E3A39" stroke-width="3" stroke-linecap="round">
+              <path d="M0 -36 V-28 M0 36 V28 M-36 0 H-28 M36 0 H28 M25 -25 L20 -20 M-25 -25 L-20 -20 M25 25 L20 20 M-25 25 L-20 20"/>
+            </g>
+            <circle class="sun" r="20" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
+          </g>
+
+          <!-- clouds -->
+          <g transform="translate(20,92)"><g class="cloud"><use href="#cl"/></g></g>
+          <g transform="translate(212,22) scale(.8)"><g class="cloud b"><use href="#cl"/></g></g>
+          <g transform="translate(298,120) scale(.7)"><g class="cloud c"><use href="#cl"/></g></g>
+
+          <!-- Mt. Fuji -->
+          <path d="M95 176 L165 66 Q180 56 195 66 L265 176 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M165 66 Q180 56 195 66 L202.7 78 L193 73 L186 82 L178 74 L170 81 L158 76 Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+
+          <!-- ground -->
+          <path d="M0 168 Q45 150 95 166 T190 166 T290 164 T360 168 V230 H0 Z" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+
+          <!-- torii -->
+          <g fill="none" stroke-linecap="round">
+            <path d="M34 178 V142 M70 178 V142 M26 146 H78 M30 154 H74" stroke="#3E3A39" stroke-width="10"/>
+            <path d="M34 178 V142 M70 178 V142 M26 146 H78 M30 154 H74" stroke="#F2A497" stroke-width="4"/>
+          </g>
+
+          <!-- rail -->
+          <path d="M0 228 H360" stroke="#3E3A39" stroke-width="3" stroke-dasharray="6 8"/>
+          <path d="M0 222 H360" stroke="#3E3A39" stroke-width="3"/>
+
+          <!-- shinkansen -->
+          <g transform="translate(0,194)">
+            <g class="train">
+              <path d="M20 22 V8 Q20 0 28 0 H78 Q100 0 114 18 V22 Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M24 15 H106" stroke="#F2A497" stroke-width="4" stroke-linecap="round"/>
+              <rect x="28" y="4" width="11" height="8" rx="3" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2"/>
+              <rect x="44" y="4" width="11" height="8" rx="3" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2"/>
+              <rect x="60" y="4" width="11" height="8" rx="3" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2"/>
+              <rect x="76" y="4" width="11" height="8" rx="3" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2"/>
+              <circle cx="36" cy="25" r="4.5" fill="#3E3A39"/>
+              <circle cx="60" cy="25" r="4.5" fill="#3E3A39"/>
+              <circle cx="94" cy="25" r="4.5" fill="#3E3A39"/>
+            </g>
+          </g>
+
+          <!-- sakura petals -->
+          <g stroke="#3E3A39" stroke-width="1.5" fill="#F2A497">
+            <ellipse class="petal" cx="40" cy="20" rx="5" ry="3" style="animation-delay:-1s;animation-duration:9s"/>
+            <ellipse class="petal" cx="112" cy="60" rx="5" ry="3" style="animation-delay:-4s;animation-duration:10s"/>
+            <ellipse class="petal" cx="205" cy="14" rx="5" ry="3" style="animation-delay:-6s;animation-duration:8s"/>
+            <ellipse class="petal" cx="330" cy="86" rx="5" ry="3" style="animation-delay:-2.5s;animation-duration:11s"/>
+            <ellipse class="petal" cx="255" cy="108" rx="5" ry="3" style="animation-delay:-7s;animation-duration:9.5s"/>
+            <ellipse class="petal" cx="150" cy="118" rx="5" ry="3" style="animation-delay:-5s;animation-duration:10.5s"/>
+            <ellipse class="petal" cx="88" cy="134" rx="5" ry="3" style="animation-delay:-8s;animation-duration:8.5s"/>
+          </g>
+
+          <!-- airplane -->
+          <g transform="translate(74,50)">
+            <g class="plane">
+              <path d="M-30 6 H-64" stroke="#3E3A39" stroke-width="2.5" stroke-dasharray="4 6" stroke-linecap="round"/>
+              <path d="M-16 4 L-22 -8 L-14 -8 L-7 4 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M-2 4 L-12 -14 L-3 -14 L12 4 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <rect x="-20" y="0" width="46" height="12" rx="6" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3"/>
+              <path d="M-2 10 L-10 25 L-1 25 L12 10 Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <circle cx="8" cy="6" r="1.7" fill="#3E3A39"/><circle cx="14" cy="6" r="1.7" fill="#3E3A39"/><circle cx="20" cy="6" r="1.7" fill="#3E3A39"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div id="heroText" class="hero-text"></div>
+      <div id="cd" class="cd" role="timer" aria-live="off"></div>
+      <p id="sync" class="sync"></p>
+    </div>
+  </section>
+
+  <!-- ===== Flights ===== -->
+  <section id="flights" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="plane"></span><span class="sticker bg-sky">航班資訊</span></h2>
+    <div id="flightList" class="stack"></div>
+  </section>
+
+  <!-- ===== Daily plan ===== -->
+  <section id="plan" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="plan"></span><span class="sticker bg-yellow">每日行程</span></h2>
+    <div id="daytabs" class="tabs" role="tablist" aria-label="選擇日期"></div>
+    <div id="timeline"></div>
+  </section>
+
+  <!-- ===== Todo ===== -->
+  <section id="todo" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="todo"></span><span class="sticker bg-green">待辦清單</span></h2>
+    <div class="card">
+      <div class="cnt-row"><span>想做的事</span><b data-cnt="todos"></b></div>
+      <div class="bar"><i data-bar="todos"></i></div>
+      <ul id="todos" class="cklist"></ul>
+      <form class="addrow" data-add="todos">
+        <input class="in" name="t" type="text" placeholder="新增一個待辦…" autocomplete="off" aria-label="新增待辦">
+        <button class="btn btn-sm btn-green" type="submit">新增</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Stay ===== -->
+  <section id="stay" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="stay"></span><span class="sticker bg-coral">住宿資訊</span></h2>
+    <div id="stayList" class="stack"></div>
+  </section>
+
+  <!-- ===== Pre-departure ===== -->
+  <section id="pre" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="pre"></span><span class="sticker bg-sky">出發前清單</span></h2>
+    <div class="card">
+      <div class="cnt-row"><span>出發前要完成</span><b data-cnt="pre"></b></div>
+      <div class="bar"><i data-bar="pre"></i></div>
+      <ul id="preList" class="cklist"></ul>
+      <form class="addrow" data-add="pre">
+        <input class="in" name="t" type="text" placeholder="新增一個項目…" autocomplete="off" aria-label="新增出發前項目">
+        <button class="btn btn-sm btn-sky" type="submit">新增</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Packing ===== -->
+  <section id="pack" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="pack"></span><span class="sticker bg-green">行李清單</span></h2>
+    <div class="card" style="margin-bottom:16px">
+      <div class="cnt-row"><span>全部打包進度</span><b data-cnt="pack"></b></div>
+      <div class="bar" style="margin-bottom:0"><i data-bar="pack"></i></div>
+    </div>
+    <div id="packList" class="stack"></div>
+    <form class="addrow" data-add="cat">
+      <input class="in" name="t" type="text" placeholder="新增分類（例如：藥品）" autocomplete="off" aria-label="新增行李分類">
+      <button class="btn btn-sm btn-yellow" type="submit">新增分類</button>
+    </form>
+  </section>
+
+  <!-- ===== Backup ===== -->
+  <section id="data" class="sec">
+    <h2 class="sec-title"><span class="ico" data-ico="data"></span><span class="sticker bg-sky">備份與資料</span></h2>
+    <div class="card">
+      <p id="dataNote">修改會自動存在這個瀏覽器裡。要換瀏覽器、換手機或分享給旅伴，按「匯出成 HTML」會得到一個內含目前所有資料的檔案，直接打開就能看；也可以用「匯出備份」存成 JSON，再到另一邊「匯入備份」。</p>
+      <div class="btnrow">
+        <button class="btn" data-act="exportHtml" type="button">匯出成 HTML</button>
+        <button class="btn btn-sky" data-act="export" type="button">匯出備份</button>
+        <button class="btn btn-green" data-act="import" type="button">匯入備份</button>
+        <button class="btn btn-paper" data-act="sample" type="button">載入範例</button>
+        <button class="btn btn-coral" data-act="blank" type="button">清空重來</button>
+      </div>
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">旅途愉快</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script id="seed" type="application/json"></script>
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'picture-book-trip-v1';
+  var TRANSPORTS = ['步行', '電車', '新幹線', '巴士', '計程車', '飛機', '其他'];
+  var TCOLOR = {
+    '步行': 'bg-green', '電車': 'bg-sky', '新幹線': 'bg-yellow',
+    '巴士': 'bg-paper', '計程車': 'bg-paper', '飛機': 'bg-sky', '其他': 'bg-paper'
+  };
+  var WD = ['日', '一', '二', '三', '四', '五', '六'];
+  var PACK_COLORS = ['bg-coral', 'bg-yellow', 'bg-sky', 'bg-green'];
+
+  var INK = '#3E3A39';
+  function svg(inner) {
+    return '<svg viewBox="0 0 32 32" fill="none" stroke="' + INK + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">' + inner + '</svg>';
+  }
+  var ICONS = {
+    plane: svg('<path d="M3 16 L29 6 L23 26 L15 20 L11 28 L10 19 Z" fill="#A8D3E6"/>'),
+    plan: svg('<rect x="4" y="7" width="24" height="21" rx="6" fill="#F6D27A"/><path d="M4 15 H28"/><path d="M11 3 V10 M21 3 V10"/>'),
+    todo: svg('<circle cx="16" cy="16" r="12" fill="#B9DAA5"/><path d="M10 16.5 l4 4 l8 -9"/>'),
+    stay: svg('<path d="M4 16 L16 5 L28 16 V27 H4 Z" fill="#F2A497"/><rect x="13" y="18" width="6" height="9" rx="2" fill="#FFFCF6"/>'),
+    pre: svg('<rect x="6" y="6" width="20" height="23" rx="5" fill="#A8D3E6"/><rect x="11" y="3" width="10" height="6" rx="2" fill="#F6D27A"/><path d="M11 16 H21 M11 22 H17"/>'),
+    pack: svg('<rect x="4" y="10" width="24" height="18" rx="6" fill="#B9DAA5"/><path d="M12 10 V6 H20 V10"/><path d="M4 18 H28"/>'),
+    data: svg('<rect x="5" y="5" width="22" height="22" rx="5" fill="#A8D3E6"/><rect x="10" y="5" width="12" height="8" fill="#FFFCF6"/><rect x="10" y="18" width="12" height="9" rx="2" fill="#F6D27A"/>')
+  };
+  var PIN = '<svg viewBox="0 0 16 16" fill="#F2A497" stroke="' + INK + '" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M8 15 C3 9 3 7 3 6 a5 5 0 0 1 10 0 c0 1 0 3 -5 9 z"/><circle cx="8" cy="6" r="1.6" fill="#FFFCF6"/></svg>';
+  var STAR = '<svg viewBox="0 0 16 16" fill="#F6D27A" stroke="' + INK + '" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.5 L9.9 5.8 L14.5 6.2 L11 9.3 L12.1 13.8 L8 11.4 L3.9 13.8 L5 9.3 L1.5 6.2 L6.1 5.8 Z"/></svg>';
+  var ROUTE_LINE = '<svg viewBox="0 0 80 28" aria-hidden="true"><path d="M2 14 H78" stroke="' + INK + '" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round" fill="none"/><g class="mini-plane"><path d="M30 14 L46 7 L43 14 L46 21 Z" fill="#F6D27A" stroke="' + INK + '" stroke-width="2.5" stroke-linejoin="round"/></g></svg>';
+
+  /* ---------- data ---------- */
+  function sample() {
+    return {
+      title: '東京・京都 櫻花之旅',
+      subtitle: '2027.03.27 - 03.31 · 5 天 4 夜（範例資料，可自行修改）',
+      flights: [
+        { dir: '去程', airline: '範例航空', no: 'AB 123', fromCode: 'TPE', fromCity: '桃園', toCode: 'NRT', toCity: '東京成田', date: '2027-03-27', dep: '08:30', arr: '12:50', note: '第 1 航廈，託運行李 23kg（範例）' },
+        { dir: '回程', airline: '範例航空', no: 'AB 456', fromCode: 'KIX', fromCity: '大阪關西', toCode: 'TPE', toCity: '桃園', date: '2027-03-31', dep: '16:10', arr: '18:30', note: '提早 3 小時抵達機場（範例）' }
+      ],
+      days: [
+        { date: '2027-03-27', theme: '出發・抵達東京', items: [
+          { time: '06:00', title: '機場報到', place: '桃園國際機場', note: '提早 2.5 小時辦理登機與託運', transport: '其他', must: false },
+          { time: '08:30', title: '搭機前往東京', place: '', note: '', transport: '飛機', must: false },
+          { time: '13:30', title: '入境後搭成田特快進市區', place: '成田機場站', note: '先買好交通票券會更順', transport: '電車', must: false },
+          { time: '16:00', title: '飯店 Check-in', place: '範例新宿飯店', note: '', transport: '步行', must: false },
+          { time: '18:30', title: '思い出橫丁晚餐', place: '新宿 思い出横丁', note: '炭火串燒與小酒館的昭和風小巷', transport: '步行', must: true }
+        ] },
+        { date: '2027-03-28', theme: '東京經典散策', items: [
+          { time: '09:00', title: '淺草寺・雷門', place: '淺草寺', note: '早點到人比較少，好拍照', transport: '電車', must: true },
+          { time: '11:30', title: '仲見世通 邊走邊吃', place: '仲見世通り', note: '人形燒、炸肉餅', transport: '步行', must: false },
+          { time: '14:00', title: '東京晴空塔', place: '東京晴空塔', note: '', transport: '步行', must: false },
+          { time: '18:00', title: '澀谷十字路口與夜景', place: '澀谷 SCRAMBLE SQUARE', note: '', transport: '電車', must: true }
+        ] },
+        { date: '2027-03-29', theme: '移動到京都', items: [
+          { time: '08:30', title: '新幹線 東京 → 京都', place: '東京車站', note: '建議先訂指定席，別忘了買車站便當', transport: '新幹線', must: true },
+          { time: '12:00', title: '抵達京都，寄放行李', place: '京都車站', note: '', transport: '步行', must: false },
+          { time: '14:00', title: '清水寺', place: '清水寺', note: '', transport: '巴士', must: true },
+          { time: '17:00', title: '祇園・花見小路散步', place: '花見小路通', note: '', transport: '步行', must: false }
+        ] },
+        { date: '2027-03-30', theme: '京都深度遊', items: [
+          { time: '08:00', title: '伏見稻荷大社', place: '伏見稻荷大社', note: '千本鳥居，穿好走的鞋', transport: '電車', must: true },
+          { time: '13:30', title: '嵐山竹林小徑', place: '嵐山竹林の小径', note: '', transport: '電車', must: true },
+          { time: '15:30', title: '渡月橋散步', place: '渡月橋', note: '', transport: '步行', must: false },
+          { time: '18:00', title: '先斗町晚餐', place: '先斗町', note: '', transport: '步行', must: false }
+        ] },
+        { date: '2027-03-31', theme: '買好買滿・返家', items: [
+          { time: '09:00', title: '飯店退房', place: '', note: '', transport: '其他', must: false },
+          { time: '10:00', title: '錦市場買伴手禮', place: '錦市場', note: '', transport: '步行', must: false },
+          { time: '12:30', title: '搭特急 HARUKA 前往關西機場', place: '京都車站', note: '', transport: '電車', must: false },
+          { time: '16:10', title: '搭機返回桃園', place: '關西國際機場', note: '', transport: '飛機', must: false }
+        ] }
+      ],
+      todos: [
+        { t: '買伴手禮：東京香蕉、八橋', done: false },
+        { t: '吃一碗熱騰騰的拉麵', done: false },
+        { t: '在新幹線上拍富士山', done: false },
+        { t: '喝抹茶、吃和菓子', done: false },
+        { t: '去神社投個五円許願', done: false }
+      ],
+      stays: [
+        { name: '範例新宿飯店', from: '2027-03-27', to: '2027-03-29', addr: '東京都新宿區 1-2-3（範例）', conf: 'ABC-12345', note: '15:00 後入住，可寄放行李' },
+        { name: '範例京都旅館', from: '2027-03-29', to: '2027-03-31', addr: '京都市東山區 4-5-6（範例）', conf: 'XYZ-67890', note: '含早餐' }
+      ],
+      pre: [
+        { t: '確認護照效期', done: true },
+        { t: '填寫 Visit Japan Web 入境資料', done: false },
+        { t: '預約新幹線指定席', done: false },
+        { t: '訂好 eSIM 或網卡', done: false },
+        { t: '換好日幣現金', done: false },
+        { t: '確認信用卡海外刷卡設定', done: false },
+        { t: '購買旅平險', done: false },
+        { t: '下載離線地圖', done: false }
+      ],
+      pack: [
+        { cat: '證件與錢財', items: [{ t: '護照', done: false }, { t: '日幣現金', done: false }, { t: '信用卡', done: false }, { t: '電子機票截圖', done: false }] },
+        { cat: '電子用品', items: [{ t: '手機與充電線', done: false }, { t: '行動電源', done: false }, { t: '耳機', done: false }] },
+        { cat: '衣物', items: [{ t: '換洗衣物', done: false }, { t: '薄外套', done: false }, { t: '好走的鞋', done: false }, { t: '睡衣', done: false }] },
+        { cat: '盥洗與藥品', items: [{ t: '牙刷牙膏', done: false }, { t: '保養品', done: false }, { t: '常備藥品', done: false }] },
+        { cat: '其他', items: [{ t: '折疊傘', done: false }, { t: '環保袋', done: false }, { t: '零錢包', done: false }] }
+      ]
+    };
+  }
+
+  function blank() {
+    return { title: '我的旅程', subtitle: '日期・天數・路線', flights: [], days: [{ date: '', theme: '', items: [] }], todos: [], stays: [], pre: [], pack: [] };
+  }
+
+  function normalize(o) {
+    var s = blank();
+    if (!o || typeof o !== 'object') { return s; }
+    s.title = String(o.title || s.title);
+    s.subtitle = String(o.subtitle || '');
+    ['flights', 'days', 'todos', 'stays', 'pre', 'pack'].forEach(function (k) {
+      if (Array.isArray(o[k])) { s[k] = o[k]; }
+    });
+    s.days.forEach(function (d) { if (!Array.isArray(d.items)) { d.items = []; } });
+    s.pack.forEach(function (c) { if (!Array.isArray(c.items)) { c.items = []; } });
+    if (!s.days.length) { s.days.push({ date: '', theme: '', items: [] }); }
+    return s;
+  }
+
+  // An exported HTML file carries its data in the #seed tag. A new stamp means a new export,
+  // so the seed replaces whatever this browser had stored before.
+  function readSeed() {
+    try {
+      var txt = document.getElementById('seed').textContent.trim();
+      if (txt) { return JSON.parse(txt); }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  function load() {
+    var seed = readSeed(), oldStamp = null;
+    try { oldStamp = localStorage.getItem(KEY + '-stamp'); } catch (e) { /* ignore */ }
+    if (seed && seed.data && String(seed.stamp) !== oldStamp) {
+      var fromSeed = normalize(seed.data);
+      try {
+        localStorage.setItem(KEY + '-stamp', String(seed.stamp));
+        localStorage.setItem(KEY, JSON.stringify(fromSeed));
+      } catch (e) { /* ignore */ }
+      return fromSeed;
+    }
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { return normalize(JSON.parse(raw)); }
+    } catch (e) { /* ignore */ }
+    return sample();
+  }
+
+  var S = load();
+  var editing = false;
+  var curDay = 0;
+
+  /* ---------- shared (cloud) mode ---------- */
+  // Inside the Artifact viewer with the db capability, the trip lives in shared documents
+  // (one per section) so every companion with edit access sees and edits the same data.
+  // Outside the viewer (a plain HTML file) everything stays in localStorage as before.
+  var SECTIONS = ['meta', 'flights', 'days', 'todos', 'stays', 'pre', 'pack'];
+  var shared = false, readOnly = false, colRef = null, dlns = null, syncTimer = null;
+  var known = {}, inflight = {}, retried = {}, pend = {};
+
+  function canon(v) {
+    if (Array.isArray(v)) { return '[' + v.map(canon).join(',') + ']'; }
+    if (v && typeof v === 'object') {
+      return '{' + Object.keys(v).sort().map(function (k) { return JSON.stringify(k) + ':' + canon(v[k]); }).join(',') + '}';
+    }
+    return JSON.stringify(v === undefined ? null : v);
+  }
+  function getSection(n) {
+    if (n === 'meta') { return { title: S.title, subtitle: S.subtitle }; }
+    return { v: S[n] };
+  }
+  function fixLists(t) {
+    t.days.forEach(function (d) { if (!Array.isArray(d.items)) { d.items = []; } });
+    t.pack.forEach(function (c) { if (!Array.isArray(c.items)) { c.items = []; } });
+    if (!t.days.length) { t.days.push({ date: '', theme: '', items: [] }); }
+  }
+  // Snapshot data is frozen, so always deep-copy it before it becomes editable state.
+  function applyInto(t, n, data) {
+    if (n === 'meta') {
+      t.title = String(data.title == null ? '' : data.title);
+      t.subtitle = String(data.subtitle == null ? '' : data.subtitle);
+      return;
+    }
+    if (Array.isArray(data.v)) { t[n] = JSON.parse(JSON.stringify(data.v)); fixLists(t); }
+  }
+  function localData() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { return normalize(JSON.parse(raw)); }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  function save() {
+    if (shared) { queueSync(); return; }
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ }
+  }
+
+  function setSync(mode) {
+    var el = $('sync'), note = $('dataNote');
+    if (!el) { return; }
+    el.textContent = { local: '資料只存在這個裝置', cloud: '修改會自動儲存在雲端', ro: '你目前只能檢視，無法修改' }[mode] || '';
+    if (note && mode !== 'local') {
+      note.textContent = '修改會自動儲存。要得到一個內含所有資料的檔案，按「匯出成 HTML」，之後直接開啟或傳給別人就能看，不需要其他檔案。「匯出備份」則是存成 JSON 檔。';
+    }
+  }
+  function applyRO() {
+    document.body.classList.toggle('shared', shared);
+    document.body.classList.toggle('ro', readOnly);
+    if (readOnly && editing) {
+      editing = false;
+      $('editBtn').textContent = '編輯';
+      document.body.classList.remove('editing');
+      renderAll(false);
+    }
+    setSync(!shared ? 'local' : (readOnly ? 'ro' : 'cloud'));
+  }
+
+  function queueSync() {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(flushSync, 600);
+  }
+  // One write at a time per section document; only sections whose content really changed are written.
+  function flushSync() {
+    if (!shared || readOnly) { return; }
+    SECTIONS.forEach(function (n) {
+      var c = canon(getSection(n));
+      if (c === known[n] || inflight[n]) { return; }
+      inflight[n] = true;
+      var body = JSON.parse(JSON.stringify(getSection(n)));
+      colRef.doc(n).set(body).then(function () {
+        known[n] = c; inflight[n] = false; retried[n] = false;
+        if (canon(getSection(n)) !== known[n]) { queueSync(); }
+      }, function (e) {
+        inflight[n] = false;
+        syncError(e, n);
+      });
+    });
+  }
+  function syncError(e, n) {
+    var code = e && e.code;
+    if (code === 'invalid_argument') {
+      readOnly = true;
+      SECTIONS.forEach(function (k) { known[k] = canon(getSection(k)); });
+      applyRO();
+      toast('你沒有編輯權限，已切換為唯讀');
+      colRef.get().then(function (snap) { onTrip(snap); }, function () { /* ignore */ });
+      return;
+    }
+    if (code === 'quota_exceeded') { toast('雲端容量已滿，無法儲存'); return; }
+    if (!retried[n]) {
+      retried[n] = true;
+      setTimeout(queueSync, 2000 + Math.random() * 1000);
+      return;
+    }
+    toast('同步失敗，請檢查網路');
+  }
+
+  // Remote changes never replace a field while the viewer is typing in it.
+  function busyTyping() {
+    var a = document.activeElement;
+    return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.type !== 'checkbox';
+  }
+  function renderSection(n) {
+    switch (n) {
+      case 'meta': renderHero(); break;
+      case 'flights': renderFlights(); tick(); break;
+      case 'days': renderTabs(); renderTimeline(false); tick(); break;
+      case 'todos': renderChecklist('todos'); break;
+      case 'pre': renderChecklist('pre'); break;
+      case 'stays': renderStays(); break;
+      case 'pack': renderPack(); break;
+    }
+  }
+  function flushRender() {
+    var names = Object.keys(pend);
+    pend = {};
+    names.forEach(renderSection);
+  }
+  function scheduleRender(n) {
+    pend[n] = true;
+    if (!busyTyping()) { flushRender(); }
+  }
+  document.addEventListener('focusout', function () {
+    setTimeout(function () { if (!busyTyping()) { flushRender(); } }, 0);
+  });
+
+  function onTrip(snap) {
+    var docs = {};
+    snap.docs.forEach(function (d) { docs[d.id] = d.data(); });
+    if (!shared) {
+      // First answer from the store: an empty store adopts this browser's older local data
+      // (if any); otherwise sections missing from the store fall back to the sample content.
+      var base = snap.empty ? localData() : null, migrate = !!base;
+      if (!base) {
+        base = sample();
+        SECTIONS.forEach(function (n) { if (docs[n]) { applyInto(base, n, docs[n]); } });
+      }
+      S = base;
+      SECTIONS.forEach(function (n) { known[n] = migrate ? undefined : canon(getSection(n)); });
+      shared = true;
+      applyRO();
+      renderAll(true);
+      if (migrate && !readOnly) { queueSync(); }
+      return;
+    }
+    SECTIONS.forEach(function (n) {
+      if (!docs[n]) { return; }
+      var local = canon(getSection(n));
+      if (canon(docs[n]) === local) { known[n] = local; return; }
+      if (local !== known[n]) { return; }
+      applyInto(S, n, docs[n]);
+      known[n] = canon(getSection(n));
+      scheduleRender(n);
+    });
+  }
+
+  function initShared() {
+    if (!window.claude || typeof window.claude.use !== 'function') { return; }
+    Promise.all([window.claude.use('db'), window.claude.use('user'), window.claude.use('downloads')]).then(function (r) {
+      var db = r[0], user = r[1], got = false;
+      dlns = r[2];
+      if (!db) { return; }
+      colRef = db.collection('trip');
+      var timer = setTimeout(function () { if (!got) { toast('暫時連不上雲端，先顯示這個裝置的資料'); } }, 10000);
+      var cw = null;
+      try { cw = (user && typeof user.can === 'function') ? user.can('data.write') : null; } catch (e) { cw = null; }
+      Promise.resolve(cw).then(function (can) {
+        if (can === false) { readOnly = true; }
+        colRef.onSnapshot(function (snap) {
+          if (!got && snap.metadata.fromCache && snap.empty) { return; }
+          got = true; clearTimeout(timer);
+          onTrip(snap);
+        }, function () {
+          clearTimeout(timer);
+          shared = false; applyRO();
+          toast('無法連線到雲端，資料只存在這個裝置');
+        });
+      });
+    }, function () { /* stay in local mode */ });
+  }
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function setPath(path, val) {
+    var p = path.split('.'), o = S, i;
+    for (i = 0; i < p.length - 1; i++) { o = o[p[i]]; }
+    o[p[p.length - 1]] = val;
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function isDate(s) { return /^\d{4}-\d{2}-\d{2}$/.test(s || ''); }
+  function fmtDate(s) {
+    if (!isDate(s)) { return s || ''; }
+    var p = s.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return (+p[1]) + '/' + (+p[2]) + ' (' + WD[d.getDay()] + ')';
+  }
+  function addDays(s, n) {
+    if (!isDate(s)) { return ''; }
+    var p = s.split('-');
+    return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2] + n)).toISOString().slice(0, 10);
+  }
+  function nights(a, b) {
+    if (!isDate(a) || !isDate(b)) { return null; }
+    var x = a.split('-'), y = b.split('-');
+    var n = Math.round((Date.UTC(+y[0], +y[1] - 1, +y[2]) - Date.UTC(+x[0], +x[1] - 1, +x[2])) / 86400000);
+    return n > 0 ? n : null;
+  }
+  function mapLink(q) { return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+
+  var toastTimer, lastFlash = 0;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 1500);
+  }
+  function flash() {
+    var n = Date.now();
+    if (n - lastFlash > 3000) { lastFlash = n; toast(shared ? '已同步' : '已自動儲存'); }
+  }
+
+  function field(label, path, val, type, wide) {
+    return '<label class="fl' + (wide ? ' wide' : '') + '"><span>' + label + '</span><input class="in" type="' + (type || 'text') +
+      '" data-path="' + path + '" value="' + esc(val) + '"></label>';
+  }
+  function area(label, path, val) {
+    return '<label class="fl wide"><span>' + label + '</span><textarea class="in" rows="2" data-path="' + path + '">' + esc(val) + '</textarea></label>';
+  }
+  function selectField(label, path, val, opts) {
+    var o = opts.map(function (x) { return '<option' + (x === val ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
+    return '<label class="fl"><span>' + label + '</span><select class="in" data-path="' + path + '">' + o + '</select></label>';
+  }
+
+  /* ---------- hero ---------- */
+  function renderHero() {
+    var h = $('heroText');
+    if (editing) {
+      h.innerHTML = '<div class="fgrid one" style="text-align:left">' +
+        field('旅程標題', 'title', S.title) + field('副標題（日期、天數、路線）', 'subtitle', S.subtitle) + '</div>';
+    } else {
+      h.innerHTML = '<h1>' + esc(S.title) + '</h1>' + (S.subtitle ? '<p class="sub">' + esc(S.subtitle) + '</p>' : '');
+    }
+    document.title = S.title || '旅遊行程';
+  }
+
+  function departAt() {
+    var f = S.flights[0], d = f && isDate(f.date) ? f.date : (S.days[0] && S.days[0].date);
+    if (!isDate(d)) { return null; }
+    var t = f && /^\d{2}:\d{2}$/.test(f.dep || '') ? f.dep : '00:00';
+    var dt = new Date(d + 'T' + t + ':00');
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+  function endAt(dep) {
+    var last = S.days[S.days.length - 1];
+    if (last && isDate(last.date)) {
+      var e = new Date(last.date + 'T23:59:59');
+      if (!isNaN(e.getTime())) { return e; }
+    }
+    return dep;
+  }
+  function box(n, unit, cls) {
+    return '<div class="cd-box ' + cls + '"><b>' + n + '</b><span>' + unit + '</span></div>';
+  }
+  function tick() {
+    var el = $('cd'), dep = departAt(), now = new Date();
+    if (!dep) {
+      el.innerHTML = '<p class="cd-msg">在航班卡片填入出發日期，就會開始倒數。</p>';
+      return;
+    }
+    var diff = dep - now;
+    if (diff > 0) {
+      var s = Math.floor(diff / 1000), d = Math.floor(s / 86400);
+      s -= d * 86400;
+      var h = Math.floor(s / 3600); s -= h * 3600;
+      var m = Math.floor(s / 60); s -= m * 60;
+      el.innerHTML = '<p class="cd-label">距離出發還有</p><div class="cd-grid">' +
+        box(d, '天', 'bg-coral') + box(pad(h), '小時', 'bg-yellow') + box(pad(m), '分', 'bg-sky') + box(pad(s), '秒', 'bg-green') + '</div>';
+    } else if (now <= endAt(dep)) {
+      el.innerHTML = '<p class="cd-msg">旅程進行中，玩得開心！</p>';
+    } else {
+      el.innerHTML = '<p class="cd-msg">旅程結束，歡迎回家！</p>';
+    }
+  }
+
+  /* ---------- flights ---------- */
+  function flightHTML(f, i) {
+    var p = 'flights.' + i;
+    if (editing) {
+      return '<article class="card flight"><div class="fgrid">' +
+        selectField('類型', p + '.dir', f.dir, ['去程', '回程', '轉機']) +
+        field('航空公司', p + '.airline', f.airline) + field('航班號', p + '.no', f.no) +
+        field('出發代碼', p + '.fromCode', f.fromCode) + field('出發城市', p + '.fromCity', f.fromCity) +
+        field('抵達代碼', p + '.toCode', f.toCode) + field('抵達城市', p + '.toCity', f.toCity) +
+        field('日期', p + '.date', f.date, 'date') + field('起飛', p + '.dep', f.dep, 'time') + field('抵達', p + '.arr', f.arr, 'time') +
+        field('備註（航廈、行李、座位…）', p + '.note', f.note, 'text', true) +
+        '</div><div class="ctrl"><button class="btn btn-sm btn-coral" data-act="delFlight" data-i="' + i + '" type="button">刪除這班航班</button></div></article>';
+    }
+    var cls = f.dir === '回程' ? 'bg-sky' : (f.dir === '轉機' ? 'bg-yellow' : 'bg-coral');
+    return '<article class="card flight">' +
+      '<div class="f-head"><span class="tag ' + cls + '">' + esc(f.dir) + '</span><span class="f-no">' + esc(f.airline) + ' ' + esc(f.no) + '</span></div>' +
+      '<div class="route"><div class="airport"><b>' + esc(f.fromCode) + '</b><small>' + esc(f.fromCity) + '</small></div>' +
+      '<div class="route-mid">' + ROUTE_LINE + '</div>' +
+      '<div class="airport r"><b>' + esc(f.toCode) + '</b><small>' + esc(f.toCity) + '</small></div></div>' +
+      '<div class="f-meta"><div><small>日期</small>' + esc(fmtDate(f.date) || '--') + '</div><div><small>起飛</small>' + esc(f.dep || '--') + '</div><div><small>抵達</small>' + esc(f.arr || '--') + '</div></div>' +
+      (f.note ? '<p class="note">' + esc(f.note) + '</p>' : '') + '</article>';
+  }
+  function renderFlights() {
+    var h = S.flights.map(flightHTML).join('');
+    if (!S.flights.length) { h += '<p class="empty">還沒有航班。按右上角「編輯」就能新增。</p>'; }
+    if (editing) { h += '<button class="btn btn-sky" data-act="addFlight" type="button">＋ 新增航班</button>'; }
+    $('flightList').innerHTML = h;
+  }
+
+  /* ---------- daily plan ---------- */
+  function renderTabs() {
+    if (curDay >= S.days.length) { curDay = Math.max(0, S.days.length - 1); }
+    var h = S.days.map(function (d, i) {
+      return '<button class="tab' + (i === curDay ? ' on' : '') + '" role="tab" aria-selected="' + (i === curDay) +
+        '" data-act="day" data-i="' + i + '" type="button"><small>Day ' + (i + 1) + '</small>' + esc(fmtDate(d.date) || '--') + '</button>';
+    }).join('');
+    if (editing) { h += '<button class="tab add" data-act="addDay" aria-label="新增一天" type="button">＋</button>'; }
+    var box = $('daytabs');
+    box.innerHTML = h;
+    var on = box.querySelector('.tab.on');
+    if (on) { box.scrollTo({ left: on.offsetLeft - box.clientWidth / 2 + on.clientWidth / 2 }); }
+  }
+
+  function itemHTML(it, d, j) {
+    var p = 'days.' + d + '.items.' + j, col = TCOLOR[it.transport] || 'bg-paper';
+    if (editing) {
+      return '<li class="ti" style="--i:' + j + '"><div class="ti-time"></div><div class="ti-rail"><span class="dot ' + col + '"></span></div>' +
+        '<div class="ti-card edit"><div class="fgrid">' + field('時間', p + '.time', it.time, 'time') + selectField('交通方式', p + '.transport', it.transport, TRANSPORTS) + '</div>' +
+        field('行程名稱', p + '.title', it.title) + field('地點（會產生地圖連結）', p + '.place', it.place) + area('備註', p + '.note', it.note) +
+        '<label class="chkline"><input class="ckb" type="checkbox" data-path="' + p + '.must"' + (it.must ? ' checked' : '') + '><span>標為「必去」</span></label>' +
+        '<div class="ctrl"><button class="btn btn-sm" data-act="upItem" data-d="' + d + '" data-j="' + j + '" type="button">上移</button>' +
+        '<button class="btn btn-sm" data-act="downItem" data-d="' + d + '" data-j="' + j + '" type="button">下移</button>' +
+        '<button class="btn btn-sm btn-coral" data-act="delItem" data-d="' + d + '" data-j="' + j + '" type="button">刪除</button></div></div></li>';
+    }
+    return '<li class="ti" style="--i:' + j + '"><div class="ti-time">' + esc(it.time) + '</div>' +
+      '<div class="ti-rail"><span class="dot ' + col + '"></span></div>' +
+      '<div class="ti-card' + (it.must ? ' is-must' : '') + '"><div class="ti-tags"><span class="tag ' + col + '">' + esc(it.transport || '其他') + '</span>' +
+      (it.must ? '<span class="must">' + STAR + '必去</span>' : '') + '</div>' +
+      '<h4>' + esc(it.title) + '</h4>' +
+      (it.place ? '<a class="place" href="' + mapLink(it.place) + '" target="_blank" rel="noopener">' + PIN + esc(it.place) + '</a>' : '') +
+      (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') + '</div></li>';
+  }
+
+  function renderTimeline(animate) {
+    var day = S.days[curDay], el = $('timeline');
+    if (!day) { el.innerHTML = ''; return; }
+    var head;
+    if (editing) {
+      head = '<div class="card" style="margin-bottom:14px"><div class="fgrid">' + field('日期', 'days.' + curDay + '.date', day.date, 'date') +
+        field('當天主題', 'days.' + curDay + '.theme', day.theme) + '</div>' +
+        '<div class="ctrl"><button class="btn btn-sm btn-coral" data-act="delDay" data-i="' + curDay + '" type="button">刪除這一天</button></div></div>';
+    } else {
+      head = '<div class="day-head"><h3 class="day-title">Day ' + (curDay + 1) + (day.theme ? ' · ' + esc(day.theme) : '') + '</h3></div>';
+    }
+    var list = day.items.map(function (it, j) { return itemHTML(it, curDay, j); }).join('');
+    var body = list ? '<ol class="tl' + (animate ? ' animate' : '') + '">' + list + '</ol>' : '<p class="empty">這天還沒有行程。</p>';
+    if (editing) { body += '<button class="btn btn-sky" data-act="addItem" type="button">＋ 新增行程</button>'; }
+    el.innerHTML = head + body;
+  }
+
+  /* ---------- checklists ---------- */
+  function renderChecklist(k) {
+    var ul = $(k === 'todos' ? 'todos' : 'preList');
+    var h = S[k].map(function (x, i) {
+      var p = k + '.' + i;
+      if (editing) {
+        return '<li class="ck edit"><input class="ckb" type="checkbox" data-path="' + p + '.done"' + (x.done ? ' checked' : '') + ' aria-label="完成">' +
+          '<input class="in" type="text" data-path="' + p + '.t" value="' + esc(x.t) + '">' +
+          '<button class="x" data-act="delCk" data-k="' + k + '" data-i="' + i + '" aria-label="刪除" type="button">×</button></li>';
+      }
+      return '<li class="ck"><label><input class="ckb" type="checkbox" data-path="' + p + '.done"' + (x.done ? ' checked' : '') + '><span class="ck-t">' + esc(x.t) + '</span></label></li>';
+    }).join('');
+    ul.innerHTML = h || '<li class="empty">還沒有項目，從下面新增第一個吧。</li>';
+    updateCounts();
+  }
+
+  function renderPack() {
+    var h = S.pack.map(function (c, ci) {
+      var col = PACK_COLORS[ci % 4];
+      var items = c.items.map(function (x, j) {
+        var p = 'pack.' + ci + '.items.' + j;
+        if (editing) {
+          return '<li class="ck edit"><input class="ckb" type="checkbox" data-path="' + p + '.done"' + (x.done ? ' checked' : '') + ' aria-label="完成">' +
+            '<input class="in" type="text" data-path="' + p + '.t" value="' + esc(x.t) + '">' +
+            '<button class="x" data-act="delPack" data-c="' + ci + '" data-j="' + j + '" aria-label="刪除" type="button">×</button></li>';
+        }
+        return '<li class="ck"><label><input class="ckb" type="checkbox" data-path="' + p + '.done"' + (x.done ? ' checked' : '') + '><span class="ck-t">' + esc(x.t) + '</span></label></li>';
+      }).join('');
+      var title = editing ? '<input class="in" type="text" data-path="pack.' + ci + '.cat" value="' + esc(c.cat) + '" aria-label="分類名稱">' : '<h3>' + esc(c.cat) + '</h3>';
+      return '<div class="card pack-card"><div class="pk-head ' + col + '">' + title + '<b data-cnt="pack:' + ci + '"></b></div>' +
+        '<ul class="cklist">' + (items || '<li class="empty">空的分類</li>') + '</ul>' +
+        '<form class="addrow" data-add="pack" data-c="' + ci + '"><input class="in" name="t" type="text" placeholder="新增物品…" autocomplete="off" aria-label="新增物品"><button class="btn btn-sm ' + 'btn-green' + '" type="submit">新增</button></form>' +
+        (editing ? '<div class="ctrl"><button class="btn btn-sm btn-coral" data-act="delCat" data-c="' + ci + '" type="button">刪除這個分類</button></div>' : '') + '</div>';
+    }).join('');
+    $('packList').innerHTML = h || '<p class="empty">還沒有分類，在下方新增第一個。</p>';
+    updateCounts();
+  }
+
+  function cnt(arr) {
+    var d = 0;
+    arr.forEach(function (x) { if (x.done) { d++; } });
+    return [d, arr.length];
+  }
+  function setCount(key, c) {
+    var pct = c[1] ? Math.round(c[0] / c[1] * 100) : 0;
+    document.querySelectorAll('[data-cnt="' + key + '"]').forEach(function (e) { e.textContent = c[0] + ' / ' + c[1]; });
+    document.querySelectorAll('[data-bar="' + key + '"]').forEach(function (e) { e.style.width = pct + '%'; });
+  }
+  function updateCounts() {
+    setCount('todos', cnt(S.todos));
+    setCount('pre', cnt(S.pre));
+    var all = [];
+    S.pack.forEach(function (c, ci) {
+      setCount('pack:' + ci, cnt(c.items));
+      all = all.concat(c.items);
+    });
+    setCount('pack', cnt(all));
+  }
+
+  /* ---------- stays ---------- */
+  function renderStays() {
+    var h = S.stays.map(function (s, i) {
+      var p = 'stays.' + i;
+      if (editing) {
+        return '<article class="card stay"><div class="fgrid">' + field('住宿名稱', p + '.name', s.name, 'text', true) +
+          field('入住日', p + '.from', s.from, 'date') + field('退房日', p + '.to', s.to, 'date') +
+          field('地址', p + '.addr', s.addr, 'text', true) + field('訂房編號', p + '.conf', s.conf, 'text', true) + area('備註', p + '.note', s.note) +
+          '</div><div class="ctrl"><button class="btn btn-sm btn-coral" data-act="delStay" data-i="' + i + '" type="button">刪除這個住宿</button></div></article>';
+      }
+      var n = nights(s.from, s.to);
+      return '<article class="card stay"><h3>' + esc(s.name) + '</h3>' +
+        '<div class="stay-dates"><span class="tag bg-yellow">入住 ' + esc(fmtDate(s.from) || '--') + '</span><span class="tag bg-sky">退房 ' + esc(fmtDate(s.to) || '--') + '</span>' +
+        (n ? '<span class="tag bg-green">' + n + ' 晚</span>' : '') + '</div>' +
+        (s.addr ? '<a class="place" href="' + mapLink(s.addr) + '" target="_blank" rel="noopener">' + PIN + esc(s.addr) + '</a>' : '') +
+        (s.conf ? '<p>訂房編號：' + esc(s.conf) + '</p>' : '') +
+        (s.note ? '<p class="note">' + esc(s.note) + '</p>' : '') + '</article>';
+    }).join('');
+    if (!S.stays.length) { h = '<p class="empty">還沒有住宿資料。按右上角「編輯」就能新增。</p>'; }
+    if (editing) { h += '<button class="btn btn-coral" data-act="addStay" type="button">＋ 新增住宿</button>'; }
+    $('stayList').innerHTML = h;
+  }
+
+  /* ---------- render all ---------- */
+  function renderAll(animate) {
+    renderHero(); tick();
+    renderFlights();
+    renderTabs(); renderTimeline(animate);
+    renderChecklist('todos'); renderChecklist('pre');
+    renderStays(); renderPack();
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t.dataset || !t.dataset.path || t.type === 'checkbox') { return; }
+    setPath(t.dataset.path, t.value);
+    save(); flash();
+  });
+
+  function afterChange(path) {
+    if (/^days\.\d+\.(date|theme)$/.test(path)) { renderTabs(); }
+    if (/^flights\.0\.(date|dep)$/.test(path) || /^days\.0\.date$/.test(path)) { tick(); }
+    if (/\.done$/.test(path)) { updateCounts(); }
+    if (path === 'title') { document.title = S.title || '旅遊行程'; }
+  }
+
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.id === 'importFile') { importFile(t); return; }
+    if (!t.dataset || !t.dataset.path) { return; }
+    var v = t.type === 'checkbox' ? t.checked : t.value;
+    setPath(t.dataset.path, v);
+    save();
+    if (t.type === 'checkbox' && t.checked) {
+      t.classList.remove('pulse');
+      void t.offsetWidth;
+      t.classList.add('pulse');
+    }
+    flash();
+    afterChange(t.dataset.path);
+  });
+
+  document.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f.dataset || !f.dataset.add) { return; }
+    e.preventDefault();
+    var inp = f.querySelector('input'), v = inp.value.trim();
+    if (!v) { return; }
+    var k = f.dataset.add, c = f.dataset.c;
+    if (k === 'pack') { S.pack[+c].items.push({ t: v, done: false }); renderPack(); }
+    else if (k === 'cat') { S.pack.push({ cat: v, items: [] }); renderPack(); inp.value = ''; }
+    else { S[k].push({ t: v, done: false }); renderChecklist(k); }
+    save();
+    var sel = k === 'pack' ? 'form[data-add="pack"][data-c="' + c + '"] input' : 'form[data-add="' + k + '"] input';
+    var next = document.querySelector(sel);
+    if (next) { next.value = ''; next.focus(); }
+  });
+
+  function exportData() {
+    if (dlns) {
+      var d0 = new Date();
+      dlns.save({ filename: 'trip-backup-' + d0.getFullYear() + pad(d0.getMonth() + 1) + pad(d0.getDate()) + '.json', data: JSON.stringify(S, null, 2) })
+        .then(function () { toast('已匯出備份'); }, function (e) { if (!e || e.code !== 'declined') { toast('這裡無法下載檔案'); } });
+      return;
+    }
+    var blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a'), n = new Date();
+    a.href = URL.createObjectURL(blob);
+    a.download = 'trip-backup-' + n.getFullYear() + pad(n.getMonth() + 1) + pad(n.getDate()) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    toast('已匯出備份');
+  }
+  function importFile(inp) {
+    var file = inp.files && inp.files[0];
+    if (!file) { return; }
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var o = JSON.parse(r.result);
+        if (!o || !Array.isArray(o.days)) { throw new Error('bad'); }
+        S = normalize(o); curDay = 0; save(); renderAll(true); toast('已匯入備份');
+      } catch (err) { toast('檔案格式不正確'); }
+      inp.value = '';
+    };
+    r.readAsText(file);
+  }
+
+  // Build a standalone copy of this page with the current data baked in.
+  function buildHtml() {
+    var clone = document.documentElement.cloneNode(true);
+    var cb = clone.querySelector('body');
+    cb.classList.remove('editing');
+    cb.classList.remove('shared');
+    cb.classList.remove('ro');
+    // Keep only this page's own scripts: drop anything the viewer injected around it.
+    Array.prototype.slice.call(clone.querySelectorAll('script')).forEach(function (s) {
+      if (s.id === 'seed' || (s.textContent || '').indexOf(KEY) !== -1) { return; }
+      s.parentNode.removeChild(s);
+    });
+    Array.prototype.slice.call(clone.querySelectorAll('base,meta[http-equiv]')).forEach(function (m) {
+      m.parentNode.removeChild(m);
+    });
+    var sy = clone.querySelector('#sync');
+    if (sy) { sy.textContent = ''; }
+    ['heroText', 'cd', 'flightList', 'daytabs', 'timeline', 'todos', 'preList', 'stayList', 'packList'].forEach(function (id) {
+      var e = clone.querySelector('#' + id);
+      if (e) { e.innerHTML = ''; }
+    });
+    clone.querySelectorAll('[data-ico]').forEach(function (e) { e.innerHTML = ''; });
+    var t = clone.querySelector('#toast');
+    t.textContent = ''; t.classList.remove('on');
+    clone.querySelector('#editBtn').textContent = '編輯';
+    var payload = JSON.stringify({ stamp: String(Date.now()), data: S }).replace(/</g, '\\u003c');
+    clone.querySelector('#seed').textContent = payload;
+    return '<!DOCTYPE html>\n' + clone.outerHTML;
+  }
+  function exportHtml() {
+    var html = buildHtml(), d1 = new Date();
+    if (dlns) {
+      dlns.save({ filename: 'trip-' + d1.getFullYear() + pad(d1.getMonth() + 1) + pad(d1.getDate()) + '.html', data: html })
+        .then(function () { toast('已匯出 HTML'); }, function (e) { if (!e || e.code !== 'declined') { toast('這裡無法下載檔案'); } });
+      return;
+    }
+    var blob = new Blob([html], { type: 'text/html' });
+    var a = document.createElement('a'), n = new Date();
+    a.href = URL.createObjectURL(blob);
+    a.download = 'trip-' + n.getFullYear() + pad(n.getMonth() + 1) + pad(n.getDate()) + '.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    toast('已匯出 HTML');
+  }
+
+  function bounceActiveTab() {
+    var on = $('daytabs').querySelector('.tab.on');
+    if (on) { on.classList.remove('bounce'); void on.offsetWidth; on.classList.add('bounce'); }
+  }
+  function swap(arr, a, b) {
+    if (b < 0 || b >= arr.length) { return; }
+    var t = arr[a]; arr[a] = arr[b]; arr[b] = t;
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) { return; }
+    var a = b.dataset.act, i = +b.dataset.i, d = +b.dataset.d, j = +b.dataset.j, c = +b.dataset.c;
+    switch (a) {
+      case 'edit':
+        editing = !editing;
+        document.body.classList.toggle('editing', editing);
+        $('editBtn').textContent = editing ? '完成' : '編輯';
+        renderAll(false);
+        toast(editing ? '編輯模式：改動會自動儲存' : '已離開編輯模式');
+        return;
+      case 'day':
+        curDay = i; renderTabs(); bounceActiveTab(); renderTimeline(true); return;
+      case 'addFlight':
+        S.flights.push({ dir: S.flights.length ? '回程' : '去程', airline: '', no: '', fromCode: '', fromCity: '', toCode: '', toCity: '', date: '', dep: '', arr: '', note: '' });
+        renderFlights(); break;
+      case 'delFlight':
+        if (!confirm('確定刪除這班航班？')) { return; }
+        S.flights.splice(i, 1); renderFlights(); tick(); break;
+      case 'addDay': {
+        var last = S.days[S.days.length - 1];
+        S.days.push({ date: last ? addDays(last.date, 1) : '', theme: '', items: [] });
+        curDay = S.days.length - 1; renderTabs(); renderTimeline(true); break;
+      }
+      case 'delDay':
+        if (!confirm('確定刪除這一天的所有行程？')) { return; }
+        S.days.splice(i, 1);
+        if (!S.days.length) { S.days.push({ date: '', theme: '', items: [] }); }
+        curDay = Math.min(curDay, S.days.length - 1);
+        renderTabs(); renderTimeline(true); tick(); break;
+      case 'addItem':
+        S.days[curDay].items.push({ time: '', title: '新行程', place: '', note: '', transport: '步行', must: false });
+        renderTimeline(false); break;
+      case 'delItem':
+        S.days[d].items.splice(j, 1); renderTimeline(false); break;
+      case 'upItem':
+        swap(S.days[d].items, j, j - 1); renderTimeline(false); break;
+      case 'downItem':
+        swap(S.days[d].items, j, j + 1); renderTimeline(false); break;
+      case 'addStay':
+        S.stays.push({ name: '', from: '', to: '', addr: '', conf: '', note: '' }); renderStays(); break;
+      case 'delStay':
+        if (!confirm('確定刪除這個住宿？')) { return; }
+        S.stays.splice(i, 1); renderStays(); break;
+      case 'delCk':
+        S[b.dataset.k].splice(i, 1); renderChecklist(b.dataset.k); break;
+      case 'delPack':
+        S.pack[c].items.splice(j, 1); renderPack(); break;
+      case 'delCat':
+        if (!confirm('確定刪除整個分類？')) { return; }
+        S.pack.splice(c, 1); renderPack(); break;
+      case 'exportHtml': exportHtml(); return;
+      case 'export': exportData(); return;
+      case 'import': $('importFile').click(); return;
+      case 'sample':
+        if (!confirm('載入範例會取代目前所有內容，確定嗎？（建議先匯出備份）')) { return; }
+        S = sample(); curDay = 0; save(); renderAll(true); toast('已載入範例'); return;
+      case 'blank':
+        if (!confirm('清空會刪除目前所有內容，確定嗎？（建議先匯出備份）')) { return; }
+        S = blank(); curDay = 0; save(); renderAll(true); toast('已清空，從頭開始吧'); return;
+    }
+    save();
+  });
+
+  /* ---------- init ---------- */
+  document.querySelectorAll('[data-ico]').forEach(function (el) { el.innerHTML = ICONS[el.dataset.ico] || ''; });
+  renderAll(true);
+  setInterval(tick, 1000);
+  setSync('local');
+  initShared();
+
+  // scroll spy for the top menu
+  var chipBox = $('chips'), chips = {};
+  document.querySelectorAll('.chip').forEach(function (a) { chips[a.getAttribute('href').slice(1)] = a; });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) { return; }
+        Object.keys(chips).forEach(function (k) { chips[k].classList.remove('on'); });
+        var c = chips[en.target.id];
+        if (c) {
+          c.classList.add('on');
+          chipBox.scrollTo({ left: c.offsetLeft - chipBox.clientWidth / 2 + c.clientWidth / 2 });
+        }
+      });
+    }, { rootMargin: '-35% 0px -60% 0px' });
+    document.querySelectorAll('main section[id]').forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
